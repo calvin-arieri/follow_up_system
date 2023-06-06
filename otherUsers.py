@@ -9,7 +9,8 @@ class Other_user(Base):
 
     user_id = Column(Integer, primary_key=True)
     user_name = Column(String(20))
-    user_password = Column(String(20))
-    company_name = Column(String(20))
+    user_password = Column(String)
+    company_name = Column(String)
+    company_code = Column(String)
 
 Base.metadata.create_all(engine)

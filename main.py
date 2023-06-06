@@ -2,6 +2,8 @@ from students import Student
 from sqlalchemy import  String, Column, Integer , create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+from principal import Principal
+from otherUsers import Other_user
 
 engine = create_engine('sqlite:///school.db')
 Session = sessionmaker(bind=engine)
@@ -74,7 +76,7 @@ if __name__ == "__main__":
                     add_unique_code = session.query(Student).filter(Student.student_id == student.student_id).first()
                     
                     # Gives criteria of assigning the new student indentification code
-                    new_student_code =f"s{student.student_id}{st_Sc}"
+                    new_student_code =f"s{student.student_first_name[0]}{student.student_first_name[2]}{student.student_id}{student.student_surname[-1]}{st_Sc}"
 
                     # message to confirm registration
                     print(f"Thank you for registering with us you log in code is {new_student_code}")
@@ -102,7 +104,34 @@ if __name__ == "__main__":
                 the_one = input("Your child code: ")
                 # will continue once figured how to udate record
 
-        elif    
+        elif the_chosen == "3":
+            print("Thank you for choosing our system.Provide the following info to add you to the system.")
+            p_id = None
+            p_reg =int(input("T.S.C number: "))
+            p_s = input("School code: ")
+            p_n = input("Your full name: ")
+            p_n_p = int(input("Your phone number: "))
+
+            new_principal = Principal(principal_id=p_id ,principal_reg = p_reg,  principal_school = p_s, principal_name = p_n, principal_phone_number = p_n_p)
+
+            session.add(new_principal)
+            session.commit()
+            # will add log in code here
+
+        elif the_chosen == "4":
+            print("Thank you for choosing our system to get a person information before hiring them.")
+            print("Before you continue please register with us")
+            u_id = None
+            u_n = input("User Name: ")
+            u_p = input("password: ")
+            c_n = input("Company Name: ")
+
+            new_company = Other_user(user_id = u_id, user_name = u_n, user_password = u_p, company_name = c_n) 
+            session.add(new_company)
+            session.commit()
+            # will add the log in code here  
+
+
 
                 
 
