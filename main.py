@@ -129,6 +129,7 @@ if __name__ == "__main__":
             new_company = Other_user(user_id = u_id, user_name = u_n, user_password = u_p, company_name = c_n) 
             session.add(new_company)
             session.commit()
+            
             # will add the log in code here  
 
 
