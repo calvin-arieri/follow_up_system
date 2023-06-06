@@ -15,6 +15,7 @@ class Student(Base):
     student_second_name = Column(String(10))
     student_surname = Column(String(10))
     school_code = Column(String)
+    unique_code = Column(String)
 
      
 Base.metadata.create_all(engine)

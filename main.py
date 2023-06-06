@@ -70,7 +70,9 @@ if __name__ == "__main__":
             student_code = session.query(Student).all()
             for student in student_code:
                 if student.student_first_name == st_fn and student.student_second_name == st_Sn and student.student_surname == st_uc and student.school_code== st_Sc:
-
+                    # add the student unique code.
+                    add_unique_code = session.query(Student).filter(Student.student_id == student.student_id).first()
+                    
                     # Gives criteria of assigning the new student indentification code
                     new_student_code =f"s{student.student_id}{st_Sc}"
 
@@ -96,6 +98,11 @@ if __name__ == "__main__":
 
                 # if has student code
             if present_code == "1":
-                print("Welcome to our system we are happy to work with you")
-                print("Please enter your details so that we can start: ")
+                print("Welcome to our system we are happy to work with you to make you son works hard and is discipline in school")
+                the_one = input("Your child code: ")
+                # will continue once figured how to udate record
+
+        elif    
+
+                
 
