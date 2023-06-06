@@ -16,5 +16,3 @@ class Student(Base):
     parent_second_name = Column(String(10))
     parent_surname = Column(String(20))
     parent_phone_number = Column(String(20))
-
-Class
