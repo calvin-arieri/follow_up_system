@@ -174,6 +174,21 @@ def main(user_id):
     elif find_category == 'c':
         pass
 
+    elif find_category == 'a':
+        the_search_code = user_id[1:6]
+        the_int = int(the_search_code)
+        get_principal = session.query(Principal).filter(Principal.principal_reg == the_int).first()
+        print(f"Welcome back {get_principal.principal_name},")
+        print('Do you want to:')
+        print('1. Add details')
+        print('2. View details')
+        print('3. Quit')
+        the_choice = input('Choose one: ')
+        if the_choice == '1':
+            print('Choose one option: ')
+            options = ('Results', 'Behaviour')
+            # start from here tommorrow
+            
 
 if __name__ == "__main__": 
     print("Welcome to school management system")
