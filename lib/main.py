@@ -1,8 +1,9 @@
-from students import Student, Parent
+from students import Student, Parent , Student_results, Student_behaviour
 from sqlalchemy import  create_engine
 from sqlalchemy.orm import sessionmaker
 from principal import Principal
 from otherUsers import Other_user
+from tabulate import tabulate
 
 def create_new_student():
     # Promts users to enter required information
@@ -65,17 +66,64 @@ def create_new_company():
     new_company = Other_user(user_id = u_id, user_name = u_n, user_password = u_p, company_name = c_n) 
     session.add(new_company)
     session.commit()
-    
 
+def add_new_result():
+    print("Happy to know the exams are done. Please enter the results below to start the computation")
+    r_id = None
+    r_p = int(input("Perfomance in terms of points: ")) 
+    s_u_c = ('Student unique code: ')
+    the_avg = r_p // 84
+    s_P = the_avg * 100
+    new_result = Student_results(result_id = r_id, result_points = r_p, student_unique_code = s_u_c, student_perfomance= s_P)
+    session.add(new_result)
+    session.commit()
+    print(f"The results have been added successfully. The student has {s_P}%")
 
+def add_misbehave(school_id):
+    print('Add information below to add the misbehave')
+    m_id = None
+    s_u_c = input("Unique code: ")
+    s_m_b = input('The mistake: ')
+    new_misbehave = Student_behaviour(misbehaviour_id = m_id, student_unique_code = s_u_c, student_misbehave = s_m_b, school_code = school_id )
+    session.add(new_misbehave)
+    session.commit()
+    print('You have successfully added the misbehaviour of the student')
+
+def get_students_school(school_cod):
+    print("Here are the number of students in your school")
+    student_numbers = 0
+    the_students = session.query(Student).filter(Student.school_code == school_cod).all()
+    table = []    
+    for student in the_students:
+        student_numbers += 1
+        data = [student.student_first_name , student.student_second_name, student.student_surname , student.unique_code] 
+        table.append(data)
+    print(tabulate(table, headers=["First Name", 'Second name', 'Surname', 'Unique code'])) 
+            
+def get_student_results():
+    print('Here are the students results')
+
+def get_students_behaviour(school_id):
+    the_mis = session.query(Student_behaviour).filter(Student_behaviour.school_code == school_id).all()
+    for the_mi in the_mis:
+        print(the_mi.misbehaviour_id, the_mi.student_unique_code, the_mi.student_misbehave)
+
+def parent_get_student_behaviour(unque_cod):
+    the_children = session.query(Student_behaviour).filter(Student_behaviour.student_unique_code == unque_cod).all()
+    for mis in the_children:
+        print(mis.student_misbehave)
+
+def parent_get_student_result(unique_cod):
+    the_results = session.query(Student_results).filter(Student_results.student_unique_code == unique_cod)
+    for result in the_results:
+        print(result.result_points, result.student_perfomance)
 
 engine = create_engine('sqlite:///school.db')
 Session = sessionmaker(bind=engine)
 session = Session()
-def main(session, user_id):
-    print(user_id)
-
-
+def main(user_id):
+    print("Welcome back.")
+    
 if __name__ == "__main__": 
     print("Welcome to school management system")
     print("Are you an existing member?")
@@ -86,7 +134,7 @@ if __name__ == "__main__":
     # log if in the system
     if get_choice == "1":
         user_id = input("Please ented your indentification number: ")
-        main(session, user_id)
+        main(user_id)
 
         # register if not in the system
     elif get_choice == "2":

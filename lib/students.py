@@ -25,6 +25,21 @@ class Parent(Base):
     parent_phone = Column(String)  
     student_code = Column(String)
     parent_log_in = Column(String) 
-      
+
+class Student_behaviour(Base):
+    __tablename__ = 'misbehaviours'
+    
+    misbehaviour_id = Column(Integer, primary_key=True)
+    student_unique_code = Column(String)
+    student_misbehave = Column(String)
+    school_code  = Column(String)
+
+class Student_results(Base):
+    __tablename__ = 'results'
+
+    result_id = Column(Integer, primary_key=True)
+    result_points = Column(Integer)
+    student_unique_code = Column(String)
+    student_perfomance = Column(Integer)  
 Base.metadata.create_all(engine)
 
