@@ -73,11 +73,11 @@ if __name__ == "__main__":
             for student in student_code:
                 if student.student_first_name == st_fn and student.student_second_name == st_Sn and student.student_surname == st_uc and student.school_code== st_Sc:
                     # add the student unique code.
-                    add_unique_code = session.query(Student).filter(Student.student_id == student.student_id).first()
-                    
+                    add_unique_code = session.query(Student).filter(Student.student_id == student.student_id).first()                    
                     # Gives criteria of assigning the new student indentification code
                     new_student_code =f"s{student.student_first_name[0]}{student.student_first_name[2]}{student.student_id}{student.student_surname[-1]}{st_Sc}"
-
+                    add_unique_code.unique_code = new_student_code
+                    session.commit()
                     # message to confirm registration
                     print(f"Thank you for registering with us you log in code is {new_student_code}")
                     
