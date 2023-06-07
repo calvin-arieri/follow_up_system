@@ -17,7 +17,6 @@ def create_new_student():
     new_student = Student(student_id=st_id, student_first_name = st_fn, student_second_name = st_Sn, student_surname = st_uc, school_code = st_Sc)
     session.add(new_student)
     session.commit()
-
     # Finds new student to assign them a new unique key
     student_code = session.query(Student).all()
     for student in student_code:
@@ -30,7 +29,7 @@ def create_new_student():
             session.commit()
             # message to confirm registration
             print(f"Thank you for registering with us you log in code is {new_student_code}")
-
+# add new parent
 def create_new_parent():
     print("Welcome to our system we are happy to work with you to make you son works hard and is disciplined in school")
     the_one = input("Your child code: ")
@@ -47,6 +46,7 @@ def create_new_parent():
     session.commit()
     print(f"Welcome {pa_name} your log/user in code is {the_code}")
 
+# add new principal
 def create_new_principal():
     print("Thank you for choosing our system.Provide the following info to add you to the system.")
     p_id = None
@@ -61,6 +61,7 @@ def create_new_principal():
     session.commit()
     print(f"Welcome {p_n} your usercode is a{p_reg}") 
 
+# add new company
 def create_new_company():
     print("Thank you for choosing our system to get a person information before hiring them.")
     print("Before you continue please register with us")
@@ -73,7 +74,8 @@ def create_new_company():
     session.add(new_company)
     session.commit()
     print(f"Welcome {c_n} we are happy to work with your user code is c{u_p}")
-
+    
+# add new result
 def add_new_result():
     print("Happy to know the exams are done. Please enter the results below to start the computation")
     r_id = None
@@ -188,7 +190,7 @@ def main(user_id):
             print('Choose one option: ')
             options = ('Results', 'Behaviour')
             # start from here tommorrow
-            
+
 
 if __name__ == "__main__": 
     print("Welcome to school management system")
@@ -210,7 +212,7 @@ if __name__ == "__main__":
         # Gives list of people to be registered
         list_of_choices = ["Student", "Parent", "Principal", "Company"]
 
-        #  Returns the options available
+        #  Returns the options availablen
         num = 0
         for choice in list_of_choices:
             num += 1
