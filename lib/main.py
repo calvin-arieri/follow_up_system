@@ -41,6 +41,11 @@ def create_new_parent():
     new_parent = Parent(parent_id = pa_id, parent_name = pa_name, parent_phone=pa_ph, student_code = the_one)
     session.add(new_parent)
     session.commit()
+    give_code = session.query(Parent).filter(Parent.parent_name == pa_name, Parent.parent_phone ==pa_ph).first()
+    the_code = f"p{give_code.parent_id*21}s{give_code.parent_name[0:2]}"
+    give_code.parent_log_in = the_code
+    session.commit()
+    print(f"Welcome {pa_name} your log/user in code is {the_code}")
 
 def create_new_principal():
     print("Thank you for choosing our system.Provide the following info to add you to the system.")
@@ -53,7 +58,8 @@ def create_new_principal():
     new_principal = Principal(principal_id=p_id ,principal_reg = p_reg,  principal_school = p_s, principal_name = p_n, principal_phone_number = p_n_p)
 
     session.add(new_principal)
-    session.commit() 
+    session.commit()
+    print(f"Welcome {p_n} your usercode is a{p_reg}") 
 
 def create_new_company():
     print("Thank you for choosing our system to get a person information before hiring them.")
@@ -66,6 +72,7 @@ def create_new_company():
     new_company = Other_user(user_id = u_id, user_name = u_n, user_password = u_p, company_name = c_n) 
     session.add(new_company)
     session.commit()
+    print(f"Welcome {c_n} we are happy to work with your user code is c{u_p}")
 
 def add_new_result():
     print("Happy to know the exams are done. Please enter the results below to start the computation")
@@ -99,7 +106,7 @@ def get_students_school(school_cod):
         data = [student.student_first_name , student.student_second_name, student.student_surname , student.unique_code] 
         table.append(data)
     print(tabulate(table, headers=["First Name", 'Second name', 'Surname', 'Unique code'])) 
-            
+
 def get_student_results():
     print('Here are the students results')
 
@@ -121,9 +128,53 @@ def parent_get_student_result(unique_cod):
 engine = create_engine('sqlite:///school.db')
 Session = sessionmaker(bind=engine)
 session = Session()
+
 def main(user_id):
-    print("Welcome back.")
-    
+    find_category = user_id[0]
+    if find_category == "s":
+        the_details = session.query(Student).filter(Student.unique_code == user_id).first()
+        print(f"Welcome back {the_details.student_second_name} {the_details.student_surname},")
+        print("What details do tou want to see today")
+        option_for = ('Results', 'Behaviour', 'Rating', 'quit')
+        the = 0
+        for option in option_for:
+            the += 1
+            print(f'{the}. {option}')
+        one_option = input("choose one: ")
+        if one_option == '1':
+            parent_get_student_result(user_id)
+        elif one_option == '2':
+            parent_get_student_behaviour(user_id) 
+        elif one_option == '3':
+            print('work on it')
+        elif one_option  == '4':
+            print(f'You have sucssefully exited the application hope to see you {the_details.student_first_name}')  
+        else:
+            print('Invalid input')
+
+    elif find_category == 'p':
+        the_details = session.query(Parent).filter(Parent.parent_log_in == user_id).first()
+        print(f'welcome back {the_details.parent_name}')
+        option_for = ('Results', 'Behaviour', 'Rating', 'quit')
+        the = 0
+        for option in option_for:
+            the += 1
+            print(f'{the}. {option}')
+        the_option = input('choose one option: ') 
+        if the_option == "1":
+            parent_get_student_result(the_details.student_code)
+        elif the_option == '2':
+            parent_get_student_behaviour(the_details.student_code)
+        elif the_option == '3':
+            print('still working on this')
+        elif the_option == '3':
+            print('You have successfuly exited the program')
+        else:
+            print('invalid output')  
+    elif find_category == 'c':
+        pass
+
+
 if __name__ == "__main__": 
     print("Welcome to school management system")
     print("Are you an existing member?")
@@ -133,7 +184,7 @@ if __name__ == "__main__":
     get_choice = input("Choose one: ")
     # log if in the system
     if get_choice == "1":
-        user_id = input("Please ented your indentification number: ")
+        user_id = input("Please enter your user number: ")
         main(user_id)
 
         # register if not in the system

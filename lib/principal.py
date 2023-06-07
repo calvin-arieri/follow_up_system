@@ -12,6 +12,6 @@ class Principal(Base):
     principal_school = Column(String(10))
     principal_name = Column(String)
     principal_phone_number = Column(Integer)
-    pincipal_unique_code = Column(String)
+
 
 Base.metadata.create_all(engine)     
