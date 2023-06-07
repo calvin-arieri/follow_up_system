@@ -17,5 +17,14 @@ class Student(Base):
     school_code = Column(String)
     unique_code = Column(String)
 
-     
+class Parent(Base):
+    __tablename__ = 'parents'
+
+    parent_id = Column(Integer, primary_key=True)
+    parent_name = Column(String)
+    parent_phone = Column(String)  
+    student_code = Column(String)
+    parent_log_in = Column(String) 
+      
 Base.metadata.create_all(engine)
+
