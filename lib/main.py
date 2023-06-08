@@ -1,8 +1,7 @@
-from students import Student, Parent , Student_results, Student_behaviour
+from students import Student, Parent , Student_results, Student_behaviour, Other_user, Principal
 from sqlalchemy import  create_engine
 from sqlalchemy.orm import sessionmaker
-from principal import Principal
-from otherUsers import Other_user
+
 from tabulate import tabulate
 
 def create_new_student():
@@ -130,10 +129,7 @@ def get_students_school(school_cod):
         student_numbers += 1
         data = [student_numbers , student.student_first_name , student.student_second_name, student.student_surname , student.unique_code] 
         table.append(data)
-    print(tabulate(table, headers=['Number',"First Name", 'Second name', 'Surname', 'Unique code'])) 
-
-def get_student_results():
-    print('Here are the students results')
+    print(tabulate(table, headers=['Number',"First Name", 'Second name', 'Surname', 'Unique code'], tablefmt='github')) 
 
 # Prints the behavior of student accoreding to a certain school only for the principals
 def get_students_behaviour(school_id):
@@ -144,21 +140,28 @@ def get_students_behaviour(school_id):
         student_name = session.query(Student).filter(Student.unique_code == the_mi.student_unique_code).first()
         data = [the_mi.misbehaviour_id,f'{student_name.student_first_name} {student_name.student_second_name}', the_mi.student_misbehave]
         table.append(data)
-    print(tabulate(table, headers=['misbehaviour id', 'Student name', 'Mistake']))    
+    print(tabulate(table, headers=['misbehaviour id', 'Student name', 'Mistake'], tablefmt='github'))    
 
 # fetching the student indiscipline cases of the parents child
 def parent_get_student_behaviour(unque_cod):
     the_children = session.query(Student_behaviour).filter(Student_behaviour.student_unique_code == unque_cod).all()
     the_mistakes = []
+    num = 0
     for mis in the_children:
-        the_mistakes.append(mis.student_misbehave)
-    print(the_mistakes)   
+        num += 1
+        the_mistakes.append([num , mis.student_misbehave])
+    print(tabulate(the_mistakes , headers=['Number of mistakes', 'The misbehave']))         
 
 # fetching the students result
 def parent_get_student_result(unique_cod):
     the_results = session.query(Student_results).filter(Student_results.student_unique_code == unique_cod).all()
+    num = 0
+    table = []
     for result in the_results:
-        print(result.result_points, result.student_perfomance)
+        num +=1
+        data = [num , result.result_id,result.result_points, result.student_perfomance]
+        table.append(data)
+    print(tabulate(table, headers=['Number of exam' , 'Exam id', 'Student points', 'student percentage '], tablefmt='github'))    
 
 def student_rating(unique_cod):
     the_results = session.query(Student_results).filter(Student_results.student_unique_code == unique_cod).all()
@@ -190,7 +193,7 @@ def student_rating(unique_cod):
         msg = "Good but requires supervision "
     else:
         msg = "Cannot recommend him"  
-    print(tabulate( [['Academic perfomance in %', 'Discipline percentage', 'Average rating', 'What to say about rating'],[the_average, rate,the_rating_of, msg ]], headers='firstrow'))      
+    print(tabulate( [['Academic perfomance in %', 'Discipline percentage', 'Average rating', 'What to say about rating'],[the_average, rate,the_rating_of, msg ]], headers='firstrow',tablefmt='github'))      
                       
 
 # creating the session
@@ -206,7 +209,7 @@ def main(user_id):
     if find_category == "s":
         the_details = session.query(Student).filter(Student.unique_code == user_id).first()
         print(f"Welcome back {the_details.student_second_name} {the_details.student_surname},")
-        print("What details do tou want to see today")
+        print("What details do tou want to see today ")
         option_for = ('Results', 'Behaviour', 'Rating', 'quit')
         the = 0
         for option in option_for:
@@ -263,13 +266,13 @@ def main(user_id):
         print('4. Quit')
         the_choice = input('Choose one: ')
         if the_choice == '1':
-            print('Choose one option: ')
+            print('Choose one: ')
             options = ('Results', 'Behaviour')
             number_of = 0
             for option in options:
                 number_of += 1
                 print(f"{number_of}. {option}")
-            receive_option = input("Choose one from the above")
+            receive_option = input("Choose one: ")
             if receive_option == "1":
                 student_unique_number = input("Please key in student unique number: ")
                 find_out = session.query(Student).filter(Student.unique_code == student_unique_number).first()

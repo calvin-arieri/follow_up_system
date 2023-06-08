@@ -40,7 +40,26 @@ class Student_results(Base):
     result_id = Column(Integer, primary_key=True)
     result_points = Column(Integer)
     student_unique_code = Column(String)
-    student_perfomance = Column(Integer)  
+    student_perfomance = Column(Integer) 
+
+class Other_user(Base):
+    __tablename__ = 'other_users'
+
+    user_id = Column(Integer, primary_key=True)
+    user_name = Column(String(20))
+    user_password = Column(String)
+    company_name = Column(String)
+    company_code = Column(String)
+    
+class Principal(Base):
+    __tablename__= 'principals'
+
+    principal_id = Column(Integer, primary_key=True)
+    principal_reg = Column(Integer)
+    principal_school = Column(String(10))
+    principal_name = Column(String)
+    principal_phone_number = Column(Integer)
+
     
 Base.metadata.create_all(engine)
 
