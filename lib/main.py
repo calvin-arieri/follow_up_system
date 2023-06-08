@@ -299,10 +299,13 @@ def main(user_id):
             elif the_opt == '2':
                 get_students_behaviour(get_principal.principal_school) 
             elif the_opt == '3':
-                pass
+                print('To know rating')
+                the_code = input("The student code: ")
+                student_rating(the_code)
+                
             elif the_opt == '4':
                 pass
-                    
+
         elif the_choice == '3':
             pass
         elif the_choice == '4':
