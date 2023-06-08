@@ -303,12 +303,30 @@ def main(user_id):
                 print('To know rating')
                 the_code = input("The student code: ")
                 student_rating(the_code)
-
             elif the_opt == '4':
-                pass
-
+                    the_students = session.query(Student).filter(Student.school_code == get_principal.principal_school).all()
+                    table = []
+                    for student in the_students:
+                        the_result = session.query(Student_results).filter(Student_results.student_unique_code == student.unique_code).all()
+                        for result in the_result:
+                            data = [result.result_id ,f'{student.student_first_name, student.student_second_name, student.student_surname}', result.student_perfomance]
+                            table.append(data)
+                    print(tabulate(table, headers=['Exam id', 'Student full Names', 'Student perfomance in %'])) 
+                           
+            elif the_opt == '5':
+                the_code = input('Please add the student code: ')
+                the_parent = session.query(Parent).filter(Parent.student_code == the_code).first()
+                print(tabulate([['Id', 'Name', 'Phone number', 'User code'],[the_parent.parent_id,the_parent.parent_name,the_parent.parent_phone,the_parent.parent_log_in]],headers='firstrow'))
         elif the_choice == '3':
-            pass
+            print("Input student user code to be deleted")
+            user_code = input('User code: ')
+            find_out = session.query(Student).filter(Student.unique_code == user_code).first()
+            if find_out.school_code == get_principal.principal_school:
+                print(f'You have succesfully deleted {find_out.student_first_name} {find_out.student_second_name} {find_out.student_surname}')
+                session.delete(find_out)
+                session.commit()
+            else:
+                print("You cannot delete the student since you are not the school principal")  
         elif the_choice == '4':
             print('You have successfully exited the programme')
         else:
