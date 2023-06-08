@@ -17,48 +17,64 @@ def create_new_student():
     new_student = Student(student_id=st_id, student_first_name = st_fn, student_second_name = st_Sn, student_surname = st_uc, school_code = st_Sc)
     session.add(new_student)
     session.commit()
+
     # Finds new student to assign them a new unique key
     student_code = session.query(Student).all()
     for student in student_code:
         if student.student_first_name == st_fn and student.student_second_name == st_Sn and student.student_surname == st_uc and student.school_code== st_Sc:
             # add the student unique code.
+            
             add_unique_code = session.query(Student).filter(Student.student_id == student.student_id).first()                    
             # Gives criteria of assigning the new student indentification code
+
             new_student_code =f"s{student.student_first_name[0]}{student.student_first_name[2]}{student.student_id}{student.student_surname[-1]}{st_Sc}"
             add_unique_code.unique_code = new_student_code
             session.commit()
+
             # message to confirm registration
             print(f"Thank you for registering with us you log in code is {new_student_code}")
 # add new parent
 def create_new_parent():
     print("Welcome to our system we are happy to work with you to make you son works hard and is disciplined in school")
+    # gets the required input to  create a parent
     the_one = input("Your child code: ")
     print("Please enter the required details below")
     pa_id= None
     pa_name = input("Your full names: " )
     pa_ph = input("Your phone number: ")
+    # enter values to be fed to the table
     new_parent = Parent(parent_id = pa_id, parent_name = pa_name, parent_phone=pa_ph, student_code = the_one)
+    # pushes ths values to a database
     session.add(new_parent)
     session.commit()
+    
+    # generates the loging code of the new parent
     give_code = session.query(Parent).filter(Parent.parent_name == pa_name, Parent.parent_phone ==pa_ph).first()
     the_code = f"p{give_code.parent_id*21}s{give_code.parent_name[0:2]}"
     give_code.parent_log_in = the_code
     session.commit()
+    # output the loging/user  code for the parent.
     print(f"Welcome {pa_name} your log/user in code is {the_code}")
 
 # add new principal
 def create_new_principal():
     print("Thank you for choosing our system.Provide the following info to add you to the system.")
+
+    # getting details of the new principal
     p_id = None
     p_reg =int(input("T.S.C number: "))
     p_s = input("School code: ")
     p_n = input("Your full name: ")
     p_n_p = int(input("Your phone number: "))
+    # creating the new principal  
 
     new_principal = Principal(principal_id=p_id ,principal_reg = p_reg,  principal_school = p_s, principal_name = p_n, principal_phone_number = p_n_p)
+    # Adding the principal to the database
 
     session.add(new_principal)
     session.commit()
+
+    # generating the principal user/log  code
     print(f"Welcome {p_n} your usercode is a{p_reg}") 
 
 # add new company
@@ -78,17 +94,28 @@ def create_new_company():
 # add new result
 def add_new_result():
     print("Happy to know the exams are done. Please enter the results below to start the computation")
+
+    # get the results details
     r_id = None
     r_p = int(input("Perfomance in terms of points: ")) 
     s_u_c = ('Student unique code: ')
+
+    # gets the average to find the percentage perfomance
     the_avg = r_p // 84
+
+    # calculate percentage  of the student
     s_P = the_avg * 100
+
+    # creates new result instance
     new_result = Student_results(result_id = r_id, result_points = r_p, student_unique_code = s_u_c, student_perfomance= s_P)
     session.add(new_result)
     session.commit()
     print(f"The results have been added successfully. The student has {s_P}%")
 
+
+# add misbehaviour case for the principal only
 def add_misbehave(school_id):
+    # Gets misbehaviou
     print('Add information below to add the misbehave')
     m_id = None
     s_u_c = input("Unique code: ")
@@ -98,6 +125,7 @@ def add_misbehave(school_id):
     session.commit()
     print('You have successfully added the misbehaviour of the student')
 
+# printsa all the students in the school this is only for the principal there
 def get_students_school(school_cod):
     print("Here are the number of students in your school")
     student_numbers = 0
@@ -112,25 +140,68 @@ def get_students_school(school_cod):
 def get_student_results():
     print('Here are the students results')
 
+# Prints the behavior of student accoreding to a certain school only for the principals
 def get_students_behaviour(school_id):
     the_mis = session.query(Student_behaviour).filter(Student_behaviour.school_code == school_id).all()
     for the_mi in the_mis:
         print(the_mi.misbehaviour_id, the_mi.student_unique_code, the_mi.student_misbehave)
 
+# fetching the student indiscipline cases of the parents child
 def parent_get_student_behaviour(unque_cod):
     the_children = session.query(Student_behaviour).filter(Student_behaviour.student_unique_code == unque_cod).all()
+    the_mistakes = []
     for mis in the_children:
-        print(mis.student_misbehave)
+        the_mistakes.append(mis.student_misbehave)
+    print(the_mistakes)   
 
+# fetching the students result
 def parent_get_student_result(unique_cod):
-    the_results = session.query(Student_results).filter(Student_results.student_unique_code == unique_cod)
+    the_results = session.query(Student_results).filter(Student_results.student_unique_code == unique_cod).all()
     for result in the_results:
         print(result.result_points, result.student_perfomance)
 
+def student_rating(unique_cod):
+    the_results = session.query(Student_results).filter(Student_results.student_unique_code == unique_cod).all()
+    result_sum = 0
+    number_of_exams = 0
+    for result in  the_results:
+        number_of_exams += 1
+        result_sum = result_sum + result.student_perfomance
+    the_average = result_sum // number_of_exams
+    the_children = session.query(Student_behaviour).filter(Student_behaviour.student_unique_code == unique_cod).all()
+    number_of_mistake = 0
+    for mis in the_children:
+        number_of_mistake += 1
+        return mis
+    if number_of_mistake < 2:
+        rate = 100
+    elif number_of_mistake > 2 and number_of_mistake < 5:
+        rate = 75
+    elif number_of_mistake > 5 and number_of_mistake > 7:
+        rate  = 50
+    elif number_of_mistake > 9 and number_of_mistake < 11:
+        rate = 25 
+    else:
+        rate = 0
+    the_rating_of = (the_average + rate) // 2
+    if the_rating_of < 101 and the_rating_of >= 75:
+        print("Good and well behaved student")
+    elif the_rating_of < 75 and the_rating_of >= 50:
+        print("The student is an average student in terms of behaviour and results")
+    elif the_rating_of < 50  and the_rating_of >= 25:
+        print("Good but requires supervision ")
+    else:
+        print("Cannot recommend him")           
+                      
+
+# creating the session
 engine = create_engine('sqlite:///school.db')
 Session = sessionmaker(bind=engine)
 session = Session()
 
+
+
+# the main menu for the users.
 def main(user_id):
     find_category = user_id[0]
     if find_category == "s":
@@ -148,7 +219,7 @@ def main(user_id):
         elif one_option == '2':
             parent_get_student_behaviour(user_id) 
         elif one_option == '3':
-            print('work on it')
+            student_rating(user_id)
         elif one_option  == '4':
             print(f'You have sucssefully exited the application hope to see you {the_details.student_first_name}')  
         else:
@@ -168,7 +239,7 @@ def main(user_id):
         elif the_option == '2':
             parent_get_student_behaviour(the_details.student_code)
         elif the_option == '3':
-            print('still working on this')
+            student_rating(the_details.student_code)
         elif the_option == '3':
             print('You have successfuly exited the program')
         else:
@@ -189,6 +260,23 @@ def main(user_id):
         if the_choice == '1':
             print('Choose one option: ')
             options = ('Results', 'Behaviour')
+            number_of = 0
+            for option in options:
+                number_of += 1
+                print(f"{number_of}. {option}")
+            receive_option = input("Choose one from the above")
+            if receive_option == "1":
+                pass
+            elif receive_option == "2":
+                pass
+            else:
+                print("Invalid input")
+        elif the_choice == "2":
+            pass
+        elif the_choice == '3':
+            print('You have successfully exited the programme')
+        else:
+            print('Invalid output')                
             # start from here tommorrow
 
 
@@ -197,10 +285,11 @@ if __name__ == "__main__":
     print("Are you an existing member?")
     print("1. Yes")
     print("2. No")
+
     # Receive options
     get_choice = input("Choose one: ")
     # log if in the system
-    if get_choice == "1":
+    if get_choice == "1": 
         user_id = input("Please enter your user number: ")
         main(user_id)
 

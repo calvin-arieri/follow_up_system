@@ -41,5 +41,6 @@ class Student_results(Base):
     result_points = Column(Integer)
     student_unique_code = Column(String)
     student_perfomance = Column(Integer)  
+    
 Base.metadata.create_all(engine)
 
