@@ -100,16 +100,13 @@ def add_new_result(unique_cod):
     r_p = int(input("Perfomance in terms of points: ")) 
 
     # gets the average to find the percentage perfomance
-    the_avg = r_p // 84
-
-    # calculate percentage  of the student
-    s_P = the_avg * 100
+    the_avg = (r_p / 84)*100   
 
     # creates new result instance
-    new_result = Student_results(result_id = r_id, result_points = r_p, student_unique_code = unique_cod, student_perfomance= s_P)
+    new_result = Student_results(result_id = r_id, result_points = r_p, student_unique_code = unique_cod, student_perfomance= the_avg)
     session.add(new_result)
     session.commit()
-    print(f"The results have been added successfully. The student has {s_P}%")
+    print(f"The results have been added successfully. The student has {the_avg}%")
 
 
 # add misbehaviour case for the principal only
@@ -168,33 +165,32 @@ def student_rating(unique_cod):
     result_sum = 0
     number_of_exams = 0
     for result in  the_results:
-        number_of_exams += 1
-        result_sum = result_sum + result.student_perfomance
-    the_average = result_sum // number_of_exams
-    the_children = session.query(Student_behaviour).filter(Student_behaviour.student_unique_code == unique_cod).all()
-    number_of_mistake = 0
-    for mis in the_children:
-        number_of_mistake += 1
-        return mis
-    if number_of_mistake < 2:
+         number_of_exams += 1
+         result_sum = result_sum + result.student_perfomance
+    the_average = result_sum / number_of_exams
+    the_children = session.query(Student_behaviour).filter(Student_behaviour.student_unique_code == unique_cod).count()
+    if the_children < 2:
         rate = 100
-    elif number_of_mistake > 2 and number_of_mistake < 5:
+    elif the_children > 2 and the_children < 5:
         rate = 75
-    elif number_of_mistake > 5 and number_of_mistake > 7:
+    elif the_children > 5 and the_children > 7:
         rate  = 50
-    elif number_of_mistake > 9 and number_of_mistake < 11:
+    elif the_children> 9 and the_children < 11:
         rate = 25 
     else:
         rate = 0
-    the_rating_of = (the_average + rate) // 2
+
+    the_rating_of = (the_average + rate) / 2
+
     if the_rating_of < 101 and the_rating_of >= 75:
-        print("Good and well behaved student")
+        msg = "Good and well behaved student"
     elif the_rating_of < 75 and the_rating_of >= 50:
-        print("The student is an average student in terms of behaviour and results")
+        msg = "The student is an average student in terms of behaviour and results"
     elif the_rating_of < 50  and the_rating_of >= 25:
-        print("Good but requires supervision ")
+        msg = "Good but requires supervision "
     else:
-        print("Cannot recommend him")           
+        msg = "Cannot recommend him"  
+    print(tabulate( [['Academic perfomance in %', 'Discipline percentage', 'Average rating', 'What to say about rating'],[the_average, rate,the_rating_of, msg ]], headers='firstrow'))      
                       
 
 # creating the session
@@ -248,7 +244,12 @@ def main(user_id):
         else:
             print('invalid output')  
     elif find_category == 'c':
-        pass
+        password = user_id[1:6]
+        print(password)
+        the_company = session.query(Other_user).filter(Other_user.user_password == password).first()
+        print(f'Welcome back {the_company.company_name}')
+        the_code = input("The student code: ")
+        student_rating(the_code)
 
     elif find_category == 'a':
         the_search_code = user_id[1:6]
@@ -302,7 +303,7 @@ def main(user_id):
                 print('To know rating')
                 the_code = input("The student code: ")
                 student_rating(the_code)
-                
+
             elif the_opt == '4':
                 pass
 
