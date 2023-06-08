@@ -92,13 +92,12 @@ def create_new_company():
     print(f"Welcome {c_n} we are happy to work with your user code is c{u_p}")
     
 # add new result
-def add_new_result():
+def add_new_result(unique_cod):
     print("Happy to know the exams are done. Please enter the results below to start the computation")
 
     # get the results details
     r_id = None
     r_p = int(input("Perfomance in terms of points: ")) 
-    s_u_c = ('Student unique code: ')
 
     # gets the average to find the percentage perfomance
     the_avg = r_p // 84
@@ -107,20 +106,19 @@ def add_new_result():
     s_P = the_avg * 100
 
     # creates new result instance
-    new_result = Student_results(result_id = r_id, result_points = r_p, student_unique_code = s_u_c, student_perfomance= s_P)
+    new_result = Student_results(result_id = r_id, result_points = r_p, student_unique_code = unique_cod, student_perfomance= s_P)
     session.add(new_result)
     session.commit()
     print(f"The results have been added successfully. The student has {s_P}%")
 
 
 # add misbehaviour case for the principal only
-def add_misbehave(school_id):
-    # Gets misbehaviou
-    print('Add information below to add the misbehave')
+def add_misbehave(school_id, uniqu_cod):
+    # Gets misbehaviour
+    print('Please fill the detail below')
     m_id = None
-    s_u_c = input("Unique code: ")
     s_m_b = input('The mistake: ')
-    new_misbehave = Student_behaviour(misbehaviour_id = m_id, student_unique_code = s_u_c, student_misbehave = s_m_b, school_code = school_id )
+    new_misbehave = Student_behaviour(misbehaviour_id = m_id, student_unique_code = uniqu_cod, student_misbehave = s_m_b, school_code = school_id )
     session.add(new_misbehave)
     session.commit()
     print('You have successfully added the misbehaviour of the student')
@@ -255,7 +253,8 @@ def main(user_id):
         print('Do you want to:')
         print('1. Add details')
         print('2. View details')
-        print('3. Quit')
+        print('3.Delete student')
+        print('4. Quit')
         the_choice = input('Choose one: ')
         if the_choice == '1':
             print('Choose one option: ')
@@ -266,77 +265,83 @@ def main(user_id):
                 print(f"{number_of}. {option}")
             receive_option = input("Choose one from the above")
             if receive_option == "1":
-                pass
+                student_unique_number = input("Please key in student unique number: ")
+                find_out = session.query(Student).filter(Student.unique_code == student_unique_number).first()
+                if find_out.school_code == get_principal.principal_school:
+                    add_new_result(student_unique_number)
+                else:
+                    print("You are not allowed to change any detail of the student.")  
+
             elif receive_option == "2":
-                pass
+                student_unique_number = input("Please key in student unique number: ")
+                find_out = session.query(Student).filter(Student.unique_code == student_unique_number).first()
+                if find_out.school_code == get_principal.principal_school:
+                    add_misbehave(get_principal.principal_school ,student_unique_number)
+                else:
+                    print("You are not allowed to change any detail of the student.")                  
             else:
                 print("Invalid input")
         elif the_choice == "2":
             pass
         elif the_choice == '3':
+            pass
+        elif the_choice == '4':
             print('You have successfully exited the programme')
         else:
             print('Invalid output')                
             # start from here tommorrow
 
 
-if __name__ == "__main__": 
+if __name__ == "__main__":
+    # welcomes you to the system 
     print("Welcome to school management system")
     print("Are you an existing member?")
     print("1. Yes")
     print("2. No")
-
     # Receive options
     get_choice = input("Choose one: ")
     # log if in the system
     if get_choice == "1": 
         user_id = input("Please enter your user number: ")
         main(user_id)
-
         # register if not in the system
     elif get_choice == "2":
         print("Please register with us to use this system.")  
         print("Do you want to regster as:") 
-
         # Gives list of people to be registered
-        list_of_choices = ["Student", "Parent", "Principal", "Company"]
-
+        list_of_choices = ("Student", "Parent", "Principal", "Company")
         #  Returns the options availablen
         num = 0
         for choice in list_of_choices:
             num += 1
-            print(f"{num}. {choice}") 
-
+            print(f"{num}. {choice}")
             # prompts user to chose their choice
         the_chosen = input("Please choose one: ") 
-
         # The users choice
         if the_chosen == "1":
              create_new_student()                    
                     # Application of a new parent.
         elif the_chosen == "2":
-
             # must have a student code to register as ne parent
             print("Once you child has identification code you can now proceed to this step.")
             print("Does your child have an Identification code?") 
             print("1. Yes")
             print("2. No")
-
             # If lacks the student code
             present_code = input("Choose one option: ")
             if present_code == "2":
                 # Output messages
                 print("Apply for the code. And one has applied for it please wait for response from the school so that you can register")
                 print("Thank you for showing interest in our system.")
-
                 # if has student code
             if present_code == "1":
+                # calls the creating new parent function
                 create_new_parent()
-
         elif the_chosen == "3":
+            # calls the new principal function
             create_new_principal()
-
         elif the_chosen == "4":
+            # calls the new company function
             create_new_company()        
 
              
