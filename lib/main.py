@@ -131,18 +131,23 @@ def get_students_school(school_cod):
     table = []    
     for student in the_students:
         student_numbers += 1
-        data = [student.student_first_name , student.student_second_name, student.student_surname , student.unique_code] 
+        data = [student_numbers , student.student_first_name , student.student_second_name, student.student_surname , student.unique_code] 
         table.append(data)
-    print(tabulate(table, headers=["First Name", 'Second name', 'Surname', 'Unique code'])) 
+    print(tabulate(table, headers=['Number',"First Name", 'Second name', 'Surname', 'Unique code'])) 
 
 def get_student_results():
     print('Here are the students results')
 
 # Prints the behavior of student accoreding to a certain school only for the principals
 def get_students_behaviour(school_id):
+
     the_mis = session.query(Student_behaviour).filter(Student_behaviour.school_code == school_id).all()
+    table = []
     for the_mi in the_mis:
-        print(the_mi.misbehaviour_id, the_mi.student_unique_code, the_mi.student_misbehave)
+        student_name = session.query(Student).filter(Student.unique_code == the_mi.student_unique_code).first()
+        data = [the_mi.misbehaviour_id,f'{student_name.student_first_name} {student_name.student_second_name}', the_mi.student_misbehave]
+        table.append(data)
+    print(tabulate(table, headers=['misbehaviour id', 'Student name', 'Mistake']))    
 
 # fetching the student indiscipline cases of the parents child
 def parent_get_student_behaviour(unque_cod):
@@ -282,7 +287,22 @@ def main(user_id):
             else:
                 print("Invalid input")
         elif the_choice == "2":
-            pass
+            print('Welcome to the view details section')
+            options = ("Students", 'Misbehaviours', 'student rating', 'student perfomance', 'student parent')
+            num = 0
+            for option in options:
+                num += 1
+                print(f'{num}. {option}')
+            the_opt = input('Choode one: ')
+            if the_opt   == '1':
+                get_students_school(get_principal.principal_school) 
+            elif the_opt == '2':
+                get_students_behaviour(get_principal.principal_school) 
+            elif the_opt == '3':
+                pass
+            elif the_opt == '4':
+                pass
+                    
         elif the_choice == '3':
             pass
         elif the_choice == '4':
